@@ -1,5 +1,6 @@
 import socket
 import Pyro4
+import threading
 
 def process_request(request_text):
     request_text = request_text.strip()
@@ -10,7 +11,7 @@ def process_request(request_text):
     parts = request_text.split()
     operation = parts[0].lower()
 
-    math_service = Pyro4.Proxy("PYRONAME:example.math")
+    math_service = Pyro4.Proxy("PYRONAME:mathserver")
 
     if operation == "add":
         if len(parts) != 3:
@@ -60,30 +61,36 @@ def process_request(request_text):
 
 
 def handle_client(client_socket, client_address):
-    print(f"[Socket Server] Connected by {client_address}")
+    try:
+        print(f"[Socket Server] Connected by {client_address}")
 
-    data = client_socket.recv(1024)
-    request_text = data.decode()
-    print(f"[Socket Server] Received: {request_text}")
+        data = client_socket.recv(1024)
+        request_text = data.decode()
+        print(f"[Socket Server] Received: {request_text}")
 
-    response = process_request(request_text)
-    client_socket.send(response.encode())
-    client_socket.close()
+        response = process_request(request_text)
+        client_socket.send(response.encode())
+    except Exception as e:
+        print(f"[Socket Server] Error handling client {client_address}: {e}")
+    finally:
+        client_socket.close()
 
 
 def main():
-    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # IPv4, TCP
     host = socket.gethostname()
     port = 9999
-    serversocket.bind((host, port))
-    serversocket.listen(5)
+    serversocket.bind((host, port)) # Bind socket server to this host/port so clients can connect
+    serversocket.listen()
 
     print(f"[Socket Server] Listening on {host}:{port}")
     print(f"[Socket Server] Waiting for client connections...")
 
+    # Handle multiple clients using threads
     while True:
         client_socket, client_address = serversocket.accept()
-        handle_client(client_socket, client_address)
+        thread = threading.Thread(target=handle_client, args=(client_socket, client_address))
+        thread.start()
 
 
 if __name__ == "__main__":

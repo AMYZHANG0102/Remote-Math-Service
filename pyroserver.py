@@ -1,7 +1,7 @@
 import math
 import Pyro4
 
-@Pyro4.expose
+@Pyro4.expose # Expose this class to be accessible via Pyro
 class MathOperations:
     def add(self, a, b):
         return float(a) + float(b)
@@ -35,17 +35,17 @@ class MathOperations:
 
 def main():
     print(f"[Pyro Server] Setting up server ...")
-    daemon = Pyro4.Daemon()
+    daemon = Pyro4.Daemon() # Start the Pyro daemon/server process to listen for requests
     ns = Pyro4.locateNS()
     math_service = MathOperations()
-    uri = daemon.register(math_service)
-    ns.register("example.math", uri)
+    uri = daemon.register(math_service) # Register the MathOperations object with the Pyro daemon and get its URI
+    ns.register("mathserver", uri) # Register the URI with the Pyro name server "mathserver"
 
-    print("[Pyro Server] Registered 'example.math'")
+    print("[Pyro Server] Registered 'mathserver'")
     print(f"[Pyro Server] URI: {uri}")
     print("[Pyro Server] Ready.")
 
-    daemon.requestLoop()
+    daemon.requestLoop() # Start the request loop to wait for incoming remote method calls and process them
 
 
 if __name__ == "__main__":
