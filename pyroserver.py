@@ -36,7 +36,7 @@ class MathOperations:
 def main():
     print(f"[Pyro Server] Setting up server ...")
     
-    daemon = Pyro4.Daemon(host="pyroserver") # Create a Pyro daemon that listens on the "pyroserver" hostname (which should resolve to this container's IP address)
+    daemon = Pyro4.Daemon(host="pyroserver") # Create a Pyro daemon that listens on the "pyroserver" hostname (which is the name of this container in Docker)
     ns = Pyro4.locateNS(host="pyronameserver") # Locate the Pyro name server running on "pyronameserver"
     
     math_service = MathOperations()

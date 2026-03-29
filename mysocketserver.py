@@ -64,14 +64,25 @@ def handle_client(client_socket, client_address):
     try:
         print(f"[Socket Server] Connected by {client_address}")
 
-        data = client_socket.recv(1024)
-        request_text = data.decode()
-        print(f"[Socket Server] Received: {request_text}")
-
-        response = process_request(request_text)
-        client_socket.send(response.encode())
+        while True:
+            data = client_socket.recv(1024)
+            request_text = data.decode()
+            
+            if (request_text.strip().lower() == "exit") or (not request_text):
+                print(f"[Socket Server] Client {client_address} disconnected")
+                break
+                
+            print(f"[Socket Server] Received: {request_text}")
+            
+            try:
+                response = process_request(request_text)
+            except Exception as e:
+                response = f"ERROR: {e}"
+            client_socket.send(response.encode())
+            
     except Exception as e:
         print(f"[Socket Server] Error handling client {client_address}: {e}")
+        
     finally:
         client_socket.close()
 
@@ -81,7 +92,7 @@ def main():
     host = "0.0.0.0" # Listen on all interfaces
     port = 9999
     serversocket.bind((host, port)) # Bind socket server to this host/port so clients can connect
-    serversocket.listen()
+    serversocket.listen(5) # Listen for incoming connections, with a backlog of 5
 
     print(f"[Socket Server] Listening on {host}:{port}")
     print(f"[Socket Server] Waiting for client connections...")

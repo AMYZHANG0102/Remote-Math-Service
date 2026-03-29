@@ -23,7 +23,7 @@ services:
       dockerfile: Dockerfile.socketserver
     container_name: socketserver
     depends_on:
-      -  pyronameserver # Ensure Pyro name server starts before this service
+      - pyronameserver # Ensure Pyro name server starts before this service
       - pyroserver # Ensure Pyro server starts before this service
     ports:
       - "9999:9999" # Expose socket server port to host

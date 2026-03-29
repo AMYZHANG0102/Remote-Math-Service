@@ -11,4 +11,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Run command to start the Pyro naming service
-CMD ["python", "-m", "Pyro4.naming"]
+CMD ["python", "-m", "Pyro4.naming", "--host", "0.0.0.0"]
