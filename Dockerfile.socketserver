@@ -1,0 +1,17 @@
+# Use the official Python image from the Docker Hub
+FROM python:3.11-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the requirements file into the container
+COPY requirements.txt .
+
+# Install all required Python libraries (Pyro4, serpent)
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy the socket server script into the container
+COPY mysocketserver.py .
+
+# Run the socket server script when the container starts
+CMD ["python", "mysocketserver.py"]

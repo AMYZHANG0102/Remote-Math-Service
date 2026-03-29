@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  pyronameserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.pyronameserver
+    container_name: pyronameserver
+    ports:
+      - "9090:9090" # Expose Pyro name server port to host
+  
+  pyroserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.pyroserver
+    container_name: pyroserver
+    depends_on:
+      - pyronameserver # Ensure Pyro name server starts before this service
+  
+  socketserver:
+    build:
+      context: .
+      dockerfile: Dockerfile.socketserver
+    container_name: socketserver
+    depends_on:
+      -  pyronameserver # Ensure Pyro name server starts before this service
+      - pyroserver # Ensure Pyro server starts before this service
+    ports:
+      - "9999:9999" # Expose socket server port to host
+  
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: client
+    depends_on:
+      - socketserver # Ensure socket server starts before this service
+    stdin_open: true # Keep STDIN open for interactive input
+    tty: true # Allocate a pseudo-TTY for the container to allow interactive input

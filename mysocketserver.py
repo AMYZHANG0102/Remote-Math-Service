@@ -11,7 +11,7 @@ def process_request(request_text):
     parts = request_text.split()
     operation = parts[0].lower()
 
-    math_service = Pyro4.Proxy("PYRONAME:mathserver")
+    math_service = Pyro4.Proxy("PYRONAME:mathserver@pyronameserver:9090") # Create a Pyro proxy to the math server registered in the Pyro name server at "pyronameserver" on port 9090 with the name "mathserver"
 
     if operation == "add":
         if len(parts) != 3:
@@ -78,7 +78,7 @@ def handle_client(client_socket, client_address):
 
 def main():
     serversocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # IPv4, TCP
-    host = socket.gethostname()
+    host = "0.0.0.0" # Listen on all interfaces
     port = 9999
     serversocket.bind((host, port)) # Bind socket server to this host/port so clients can connect
     serversocket.listen()

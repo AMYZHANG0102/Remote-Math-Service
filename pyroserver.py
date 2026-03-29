@@ -35,9 +35,12 @@ class MathOperations:
 
 def main():
     print(f"[Pyro Server] Setting up server ...")
-    daemon = Pyro4.Daemon() # Start the Pyro daemon/server process to listen for requests
-    ns = Pyro4.locateNS()
+    
+    daemon = Pyro4.Daemon(host="pyroserver") # Create a Pyro daemon that listens on the "pyroserver" hostname (which should resolve to this container's IP address)
+    ns = Pyro4.locateNS(host="pyronameserver") # Locate the Pyro name server running on "pyronameserver"
+    
     math_service = MathOperations()
+    
     uri = daemon.register(math_service) # Register the MathOperations object with the Pyro daemon and get its URI
     ns.register("mathserver", uri) # Register the URI with the Pyro name server "mathserver"
 
